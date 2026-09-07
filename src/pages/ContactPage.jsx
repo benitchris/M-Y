@@ -46,7 +46,7 @@ export const ContactPage = () => {
       </section>
 
       <section>
-        <div className="wrap" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+        <div className="wrap contact-grid">
           <div className="form-card">
             <h3 style={{ marginBottom: '20px' }}>Send us a message</h3>
 

@@ -87,8 +87,8 @@ export const HostProfilePage = () => {
   }
 
   return (
-    <main style={{ padding: '40px 0 80px' }}>
-      <div className="wrap" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '44px' }}>
+    <main style={{ padding: '30px 0 80px' }}>
+      <div className="wrap profile-grid">
         <div>
           <div
             style={{

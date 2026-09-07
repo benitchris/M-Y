@@ -811,6 +811,18 @@ select.status-pending { background: #fff8e6; color: #b45309; border-color: #fcd3
 select.status-approved, select.status-confirmed, select.status-completed, select.status-resolved { background: #ecfdf5; color: #047857; border-color: #6ee7b7; }
 select.status-rejected, select.status-cancelled { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
 
+.profile-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 44px;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .nav-links, .nav-actions {
@@ -822,12 +834,16 @@ select.status-rejected, select.status-cancelled { background: #fef2f2; color: #b
   .site-header.open .mobile-panel {
     display: flex;
   }
+  .hero {
+    padding: 40px 0;
+  }
   .hero .wrap {
     grid-template-columns: 1fr;
-    gap: 36px;
+    gap: 32px;
   }
-  .grid-3, .grid-2 {
+  .grid-3, .grid-2, .profile-grid, .contact-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
   .trust-row {
     grid-template-columns: 1fr 1fr;
@@ -837,8 +853,48 @@ select.status-rejected, select.status-cancelled { background: #fef2f2; color: #b
   }
   footer .wrap {
     grid-template-columns: 1fr 1fr;
+    gap: 28px;
   }
   h1 {
-    font-size: 34px;
+    font-size: 32px;
+  }
+  .form-card, .search-card, .card {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .wrap {
+    padding: 0 16px;
+  }
+  section {
+    padding: 36px 0;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+  .trust-row {
+    grid-template-columns: 1fr;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+  footer .wrap {
+    grid-template-columns: 1fr;
+  }
+  .filter-bar {
+    flex-direction: column;
+  }
+  .filter-bar select {
+    width: 100%;
+  }
+  .cta-band {
+    padding: 36px 20px;
+  }
+  .cta-band h2 {
+    font-size: 24px;
   }
 }
