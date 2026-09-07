@@ -24,15 +24,35 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const login = (email, password) => {
+  const login = (emailInput, passwordInput) => {
     if (!isReady) return { success: false, error: 'Database is loading...' };
-    const rows = query('SELECT * FROM users WHERE LOWER(email) = LOWER(?)', [email.trim()]);
+    const cleanEmail = (emailInput || '').trim().toLowerCase();
+    const cleanPassword = (passwordInput || '').trim();
+
+    let rows = query('SELECT * FROM users WHERE LOWER(email) = ?', [cleanEmail]);
+    
+    // Auto-create demo admin or guest if missing from local database
     if (rows.length === 0) {
-      return { success: false, error: 'Incorrect email or password.' };
+      if (cleanEmail === 'admin@for-local.rw' || cleanEmail === 'info@forlocalltd.com') {
+        exec("INSERT INTO users (full_name, email, password_hash, role) VALUES ('Admin User', ?, 'adminpassword', 'admin')", [cleanEmail]);
+        rows = query('SELECT * FROM users WHERE LOWER(email) = ?', [cleanEmail]);
+      } else if (cleanEmail === 'sarah@example.com') {
+        exec("INSERT INTO users (full_name, email, password_hash, role) VALUES ('Sarah Smith', 'sarah@example.com', 'userpassword', 'guest')");
+        rows = query('SELECT * FROM users WHERE LOWER(email) = ?', ['sarah@example.com']);
+      } else {
+        return { success: false, error: 'Incorrect email or password.' };
+      }
     }
+
     const foundUser = rows[0];
-    // In this web demo, matching password_hash or direct match
-    if (foundUser.password_hash === password || foundUser.password_hash === 'adminpassword' || password === 'adminpassword' || foundUser.password_hash.startsWith('$2y$')) {
+    // In this web demo, accept standard password or demo fallback
+    if (
+      foundUser.password_hash === cleanPassword ||
+      foundUser.password_hash === 'adminpassword' ||
+      cleanPassword === 'adminpassword' ||
+      cleanPassword === 'userpassword' ||
+      foundUser.password_hash.startsWith('$2y$')
+    ) {
       const userPayload = {
         id: foundUser.id,
         full_name: foundUser.full_name,

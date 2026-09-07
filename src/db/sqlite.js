@@ -58,6 +58,25 @@ export async function initDb() {
       // Run auto migration for photo_url
       try { dbInstance.run("ALTER TABLE hosts ADD COLUMN photo_url TEXT;"); } catch (e) {}
       try { dbInstance.run("ALTER TABLE host_applications ADD COLUMN photo_url TEXT;"); } catch (e) {}
+
+      // Ensure seed users exist
+      try {
+        const stmt = dbInstance.prepare('SELECT COUNT(*) AS c FROM users');
+        let userCount = 0;
+        if (stmt.step()) {
+          userCount = stmt.getAsObject().c;
+        }
+        stmt.free();
+        if (userCount === 0) {
+          dbInstance.run(SEED_DATA_SQL);
+          persistDb(dbInstance);
+        }
+      } catch (e) {
+        dbInstance.run(INIT_SCHEMA_SQL);
+        dbInstance.run(SEED_DATA_SQL);
+        persistDb(dbInstance);
+      }
+
       console.log('SQLite loaded successfully from localStorage');
       return dbInstance;
     } catch (e) {

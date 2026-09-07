@@ -27,14 +27,22 @@ export const LoginPage = () => {
     }
   };
 
-  const fillAdmin = () => {
+  const fillAdminAndLogin = () => {
     setEmail('admin@for-local.rw');
     setPassword('adminpassword');
+    const res = login('admin@for-local.rw', 'adminpassword');
+    if (res.success) {
+      navigate('/admin');
+    }
   };
 
-  const fillGuest = () => {
+  const fillGuestAndLogin = () => {
     setEmail('sarah@example.com');
     setPassword('userpassword');
+    const res = login('sarah@example.com', 'userpassword');
+    if (res.success) {
+      navigate('/');
+    }
   };
 
   return (
@@ -83,13 +91,13 @@ export const LoginPage = () => {
 
           {/* Quick Demo Fill Buttons */}
           <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid var(--line)' }}>
-            <p className="form-note" style={{ fontWeight: '700', marginBottom: '8px' }}>Demo Quick Login:</p>
+            <p className="form-note" style={{ fontWeight: '700', marginBottom: '8px' }}>⚡ Quick 1-Click Demo Login:</p>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={fillAdmin} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>
-                Admin Account
+              <button onClick={fillAdminAndLogin} className="btn btn-amber btn-sm" style={{ flex: 1 }}>
+                Log in as Admin
               </button>
-              <button onClick={fillGuest} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>
-                Guest Account
+              <button onClick={fillGuestAndLogin} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>
+                Log in as Guest
               </button>
             </div>
           </div>
