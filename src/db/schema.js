@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS hosts (
   bio TEXT,
   whats_included TEXT,
   photo_color TEXT DEFAULT '#C0DD97',
+  photo_url TEXT,
   verified INTEGER NOT NULL DEFAULT 0,
   hosting_since INTEGER DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS host_applications (
   languages TEXT,
   phone TEXT,
   about TEXT,
+  photo_url TEXT,
   status TEXT NOT NULL DEFAULT 'pending',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -79,44 +81,44 @@ INSERT INTO users (full_name, email, password_hash, role) VALUES
 ('Admin User', 'admin@for-local.rw', 'adminpassword', 'admin'),
 ('Sarah Smith', 'sarah@example.com', 'userpassword', 'guest');
 
-INSERT INTO hosts (name, city, languages, activity, rate, rating, review_count, bio, whats_included, photo_color, verified, hosting_since) VALUES
+INSERT INTO hosts (name, city, languages, activity, rate, rating, review_count, bio, whats_included, photo_color, photo_url, verified, hosting_since) VALUES
 ('Alice U.', 'kigali', 'english,french', 'orientation', 18.00, 4.9, 61,
  'I grew up in Kigali and love showing visitors the city beyond the guidebook — the markets locals actually shop at, the best brochette spot in Nyamirambo, and how to get around without getting lost in translation. I studied English and French at university and have been helping travelers navigate Rwanda for two years.',
  'Full translation support throughout your session
 Local etiquette and cultural context as you go
 Help with mobile money, SIM cards, or local transport
 Honest recommendations — no commission-driven detours',
- '#C0DD97', 1, 2024),
+ '#C0DD97', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80', 1, 2024),
 ('Eric M.', 'kigali', 'english,kinyarwanda', 'food', 22.00, 5.0, 34,
  'Kigali-born food lover who knows every market stall worth visiting.',
  'Guided market tours
 Food tastings with trusted vendors
 Translation support
-Bargaining help', '#F0997B', 1, 2023),
+Bargaining help', '#F0997B', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80', 1, 2023),
 ('Diane K.', 'kigali', 'english,french,swahili', 'business', 25.00, 4.8, 28,
  'I support business travelers with meeting logistics, interpretation, and getting around Kigali efficiently.',
  'Meeting and appointment support
 Professional interpretation
 Airport and hotel coordination
-Local business etiquette guidance', '#85B7EB', 1, 2023),
+Local business etiquette guidance', '#85B7EB', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80', 1, 2023),
 ('Jean Paul N.', 'musanze', 'english', 'fullday', 30.00, 4.9, 19,
  'Based in Musanze, I guide full-day trips around the Volcanoes region.',
  'Full-day itinerary planning
 Transport coordination
 Translation and local context
-Photo stops at the best viewpoints', '#F0A83B', 1, 2024),
+Photo stops at the best viewpoints', '#F0A83B', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80', 1, 2024),
 ('Claudine I.', 'huye', 'english,french', 'orientation', 16.00, 4.7, 12,
  'A Huye local who enjoys introducing visitors to the university town and its history.',
  'City orientation walks
 Translation support
 Recommendations for food and stays
-Historical context', '#AFA9EC', 1, 2024),
+Historical context', '#AFA9EC', 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=600&q=80', 1, 2024),
 ('Aime K.', 'kigali', 'english,swahili', 'fullday', 24.00, 4.9, 45,
  'I put together full days in Kigali mixing culture, food, and the city''s best viewpoints.',
  'Full-day custom itinerary
 Translation throughout
 Mobile money and SIM card help
-Honest, no-commission recommendations', '#D4537E', 1, 2023);
+Honest, no-commission recommendations', '#D4537E', 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=600&q=80', 1, 2023);
 
 INSERT INTO host_reviews (host_id, author_name, author_country, rating, comment) VALUES
 (1, 'Sofia', 'Spain', 5.0, 'Alice made our first day in Kigali so much easier. She translated everything at the market and helped us bargain fairly.'),

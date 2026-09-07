@@ -12,6 +12,8 @@ export const DbProvider = ({ children }) => {
       setIsReady(true);
     }).catch(err => {
       console.error('Failed to initialize SQLite database:', err);
+    }).finally(() => {
+      setIsReady(true);
     });
   }, []);
 

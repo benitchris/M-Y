@@ -92,13 +92,19 @@ export const HostProfilePage = () => {
         <div>
           <div
             style={{
-              height: '240px',
+              height: '320px',
               borderRadius: '16px',
               background: host.photo_color || '#C0DD97',
               marginBottom: '24px',
-              boxShadow: 'var(--card-shadow)'
+              boxShadow: 'var(--card-shadow)',
+              overflow: 'hidden',
+              position: 'relative'
             }}
-          />
+          >
+            {host.photo_url ? (
+              <img src={host.photo_url} alt={host.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : null}
+          </div>
 
           {host.verified === 1 && (
             <span className="badge" style={{ position: 'static', display: 'inline-flex', marginBottom: '14px' }}>

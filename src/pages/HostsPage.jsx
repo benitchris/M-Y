@@ -114,7 +114,10 @@ export const HostsPage = () => {
             ) : (
               hosts.map(host => (
                 <Link key={host.id} className="host-card" to={`/hosts/${host.id}`}>
-                  <div className="host-photo" style={{ background: host.photo_color || '#C0DD97' }}>
+                  <div className="host-photo" style={{ background: host.photo_color || '#C0DD97', position: 'relative', overflow: 'hidden' }}>
+                    {host.photo_url ? (
+                      <img src={host.photo_url} alt={host.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : null}
                     {host.verified === 1 && (
                       <span className="badge">
                         <Award size={14} /> Verified

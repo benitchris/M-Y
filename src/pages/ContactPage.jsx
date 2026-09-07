@@ -119,7 +119,7 @@ export const ContactPage = () => {
               </h3>
               <p>For urgent safety concerns during an active session, call our support line any time.</p>
               <p style={{ fontWeight: '800', fontSize: '20px', color: 'var(--green-700)', margin: 0 }}>
-                +250 700 000 000
+                <a href="tel:+250782704033" style={{ color: 'inherit', textDecoration: 'none' }}>+250 782 704 033</a>
               </p>
             </div>
 
@@ -127,7 +127,9 @@ export const ContactPage = () => {
               <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Mail size={20} color="var(--green-700)" /> General inquiries
               </h3>
-              <p style={{ fontWeight: '600', color: 'var(--ink-900)' }}>hello@for-local.rw</p>
+              <p style={{ fontWeight: '600', color: 'var(--ink-900)' }}>
+                <a href="mailto:info@forlocalltd.com" style={{ color: 'inherit', textDecoration: 'none' }}>info@forlocalltd.com</a>
+              </p>
             </div>
           </div>
         </div>

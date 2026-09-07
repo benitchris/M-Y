@@ -35,6 +35,8 @@ export const Footer = () => {
         <div>
           <h4>Support &amp; Account</h4>
           <Link to="/contact">Contact support</Link>
+          <a href="tel:+250782704033" style={{ color: '#afd1c2', fontSize: '13px', display: 'block', margin: '4px 0' }}>📞 +250 782 704 033</a>
+          <a href="mailto:info@forlocalltd.com" style={{ color: '#afd1c2', fontSize: '13px', display: 'block', margin: '4px 0' }}>✉️ info@forlocalltd.com</a>
           <Link to="/login">Log in</Link>
           <Link to="/register">Sign up</Link>
           <Link to="/admin">Admin panel</Link>

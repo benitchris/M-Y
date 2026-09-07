@@ -11,7 +11,18 @@ export const AdminDashboardPage = () => {
   const [applications, setApplications] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [hostsList, setHostsList] = useState([]);
   const [hostCount, setHostCount] = useState(0);
+
+  // New Host Form state
+  const [showAddHostModal, setShowAddHostModal] = useState(false);
+  const [newHostName, setNewHostName] = useState('');
+  const [newHostCity, setNewHostCity] = useState('kigali');
+  const [newHostLangs, setNewHostLangs] = useState('english,french');
+  const [newHostActivity, setNewHostActivity] = useState('orientation');
+  const [newHostRate, setNewHostRate] = useState('20.00');
+  const [newHostBio, setNewHostBio] = useState('');
+  const [newHostPhotoUrl, setNewHostPhotoUrl] = useState('');
 
   // SQL Console state
   const [customSql, setCustomSql] = useState('SELECT * FROM hosts');
@@ -32,12 +43,13 @@ export const AdminDashboardPage = () => {
         ORDER BY b.created_at DESC
       `);
       const msgs = query('SELECT * FROM contact_messages ORDER BY created_at DESC');
-      const hCount = query('SELECT COUNT(*) AS c FROM hosts')[0]?.c || 0;
+      const hList = query('SELECT * FROM hosts ORDER BY id DESC');
 
       setApplications(apps);
       setBookings(bks);
       setMessages(msgs);
-      setHostCount(hCount);
+      setHostsList(hList);
+      setHostCount(hList.length);
     } catch (err) {
       console.error('Error fetching admin data:', err);
     }
@@ -46,6 +58,59 @@ export const AdminDashboardPage = () => {
   const updateAppStatus = (id, newStatus) => {
     exec('UPDATE host_applications SET status = ? WHERE id = ?', [newStatus, id]);
     showNotice(`Application #${id} status updated to ${newStatus}`);
+  };
+
+  const approveAndConvertHost = (app) => {
+    exec(
+      `INSERT INTO hosts (name, city, languages, activity, rate, rating, review_count, bio, photo_url, verified, hosting_since)
+       VALUES (?, ?, ?, 'orientation', 20.00, 5.0, 0, ?, ?, 1, ?)`,
+      [app.full_name, (app.city || 'kigali').toLowerCase(), app.languages || 'english', app.about || 'Local host in Rwanda', app.photo_url || null, new Date().getFullYear()]
+    );
+    exec('UPDATE host_applications SET status = "approved" WHERE id = ?', [app.id]);
+    showNotice(`Approved application and created host profile for ${app.full_name}!`);
+  };
+
+  const updateHostPhoto = (hostId, photoUrl) => {
+    exec('UPDATE hosts SET photo_url = ? WHERE id = ?', [photoUrl, hostId]);
+    showNotice(`Updated photo for Host #${hostId}`);
+  };
+
+  const toggleHostVerified = (hostId, currentVerified) => {
+    exec('UPDATE hosts SET verified = ? WHERE id = ?', [currentVerified === 1 ? 0 : 1, hostId]);
+    showNotice(`Toggled verification for Host #${hostId}`);
+  };
+
+  const deleteHost = (hostId) => {
+    if (window.confirm('Delete this host profile?')) {
+      exec('DELETE FROM hosts WHERE id = ?', [hostId]);
+      showNotice(`Host #${hostId} deleted.`);
+    }
+  };
+
+  const handleCreateHostSubmit = (e) => {
+    e.preventDefault();
+    if (!newHostName.trim()) return;
+
+    exec(
+      `INSERT INTO hosts (name, city, languages, activity, rate, rating, review_count, bio, photo_url, verified, hosting_since)
+       VALUES (?, ?, ?, ?, ?, 5.0, 0, ?, ?, 1, ?)`,
+      [
+        newHostName.trim(),
+        newHostCity.toLowerCase(),
+        newHostLangs.trim(),
+        newHostActivity,
+        parseFloat(newHostRate) || 20.0,
+        newHostBio.trim(),
+        newHostPhotoUrl || null,
+        new Date().getFullYear()
+      ]
+    );
+
+    setShowAddHostModal(false);
+    setNewHostName('');
+    setNewHostBio('');
+    setNewHostPhotoUrl('');
+    showNotice(`Created host ${newHostName}!`);
   };
 
   const updateBookingStatus = (id, newStatus) => {
@@ -178,19 +243,132 @@ export const AdminDashboardPage = () => {
           </div>
         </div>
 
+        {/* Active Hosts Management Section */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', marginTop: '30px' }}>
+          <h2>Manage Hosts & Photos ({hostsList.length})</h2>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowAddHostModal(!showAddHostModal)}>
+            {showAddHostModal ? 'Cancel' : '+ Add New Host'}
+          </button>
+        </div>
+
+        {showAddHostModal && (
+          <form onSubmit={handleCreateHostSubmit} className="card" style={{ marginBottom: '24px', background: 'var(--sand-50)' }}>
+            <h3 style={{ marginBottom: '14px' }}>Create New Host Profile</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>Host Name</label>
+                <input type="text" value={newHostName} onChange={e => setNewHostName(e.target.value)} placeholder="e.g. Marie K." required />
+              </div>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>City</label>
+                <select value={newHostCity} onChange={e => setNewHostCity(e.target.value)}>
+                  <option value="kigali">Kigali</option>
+                  <option value="musanze">Musanze</option>
+                  <option value="huye">Huye</option>
+                  <option value="rubavu">Rubavu</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>Languages</label>
+                <input type="text" value={newHostLangs} onChange={e => setNewHostLangs(e.target.value)} placeholder="e.g. english, french, kinyarwanda" />
+              </div>
+              <div>
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>Hourly Rate ($)</label>
+                <input type="number" step="0.5" value={newHostRate} onChange={e => setNewHostRate(e.target.value)} />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>Photo URL (or Base64 image)</label>
+                <input type="url" value={newHostPhotoUrl} onChange={e => setNewHostPhotoUrl(e.target.value)} placeholder="https://images.unsplash.com/..." />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>Bio</label>
+                <textarea value={newHostBio} onChange={e => setNewHostBio(e.target.value)} placeholder="Tell visitors about this host..." />
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary" style={{ marginTop: '14px' }}>Save New Host</button>
+          </form>
+        )}
+
+        <div className="table-responsive" style={{ marginBottom: '40px' }}>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Languages</th>
+                <th>Rate</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {hostsList.length === 0 ? (
+                <tr><td colSpan="7" style={{ textAlign: 'center' }}>No hosts in database.</td></tr>
+              ) : (
+                hostsList.map(h => (
+                  <tr key={h.id}>
+                    <td>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', overflow: 'hidden', background: h.photo_color || '#C0DD97' }}>
+                        {h.photo_url ? (
+                          <img src={h.photo_url} alt={h.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : null}
+                      </div>
+                    </td>
+                    <td><strong>{h.name}</strong></td>
+                    <td>{h.city}</td>
+                    <td style={{ fontSize: '13px' }}>{h.languages}</td>
+                    <td><strong>${h.rate}/hr</strong></td>
+                    <td>
+                      <button
+                        className={`btn btn-sm ${h.verified === 1 ? 'btn-amber' : 'btn-ghost'}`}
+                        onClick={() => toggleHostVerified(h.id, h.verified)}
+                        style={{ padding: '2px 8px', fontSize: '12px' }}
+                      >
+                        {h.verified === 1 ? 'Verified ✓' : 'Unverified'}
+                      </button>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          style={{ padding: '2px 8px', fontSize: '12px' }}
+                          onClick={() => {
+                            const newUrl = prompt('Enter new Photo URL for ' + h.name, h.photo_url || '');
+                            if (newUrl !== null) updateHostPhoto(h.id, newUrl);
+                          }}
+                        >
+                          📷 Change Photo
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          style={{ color: '#dc2626', borderColor: '#fca5a5', padding: '2px 8px', fontSize: '12px' }}
+                          onClick={() => deleteHost(h.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
         {/* Host Applications Table */}
         <h2 style={{ marginBottom: '16px' }}>Host Applications</h2>
         <div className="table-responsive">
           <table className="admin-table">
             <thead>
               <tr>
+                <th>Photo</th>
                 <th>Name</th>
                 <th>City</th>
                 <th>Languages</th>
                 <th>Phone</th>
                 <th>About</th>
-                <th>Status</th>
-                <th>Submitted</th>
+                <th>Status / Action</th>
               </tr>
             </thead>
             <tbody>
@@ -199,23 +377,40 @@ export const AdminDashboardPage = () => {
               ) : (
                 applications.map(a => (
                   <tr key={a.id}>
+                    <td>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', background: '#ccc' }}>
+                        {a.photo_url ? (
+                          <img src={a.photo_url} alt={a.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : null}
+                      </div>
+                    </td>
                     <td><strong>{a.full_name}</strong></td>
                     <td>{a.city}</td>
                     <td>{a.languages}</td>
                     <td>{a.phone}</td>
-                    <td style={{ maxWidth: '240px' }}>{a.about}</td>
+                    <td style={{ maxWidth: '200px' }}>{a.about}</td>
                     <td>
-                      <select
-                        className={`status-select status-${a.status}`}
-                        value={a.status}
-                        onChange={e => updateAppStatus(a.id, e.target.value)}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                      </select>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <select
+                          className={`status-select status-${a.status}`}
+                          value={a.status}
+                          onChange={e => updateAppStatus(a.id, e.target.value)}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="approved">Approved</option>
+                          <option value="rejected">Rejected</option>
+                        </select>
+                        {a.status !== 'approved' && (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            style={{ padding: '2px 8px', fontSize: '11px' }}
+                            onClick={() => approveAndConvertHost(a)}
+                          >
+                            Approve &amp; Make Host
+                          </button>
+                        )}
+                      </div>
                     </td>
-                    <td style={{ fontSize: '12px', color: 'var(--ink-600)' }}>{a.created_at}</td>
                   </tr>
                 ))
               )}

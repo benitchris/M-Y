@@ -6,22 +6,47 @@ const STORAGE_KEY = 'for_local_sqlite_db_v1';
 let dbInstance = null;
 let SQL = null;
 
+async function loadSqlEngine() {
+  const cdnPromise = initSqlJs({
+    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/${file}`
+  });
+
+  const localPromise = initSqlJs({
+    locateFile: file => `./${file}`
+  });
+
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('WASM load timeout')), 4000)
+  );
+
+  try {
+    return await Promise.race([cdnPromise, timeoutPromise]);
+  } catch (e1) {
+    console.warn('Primary WASM load failed or timed out, trying fallback local WASM...', e1);
+    try {
+      return await localPromise;
+    } catch (e2) {
+      console.error('All WASM initializations failed:', e2);
+      throw e2;
+    }
+  }
+}
+
 export async function initDb() {
   if (dbInstance) return dbInstance;
 
   try {
-    SQL = await initSqlJs({
-      locateFile: file => `./${file}`
-    });
+    SQL = await loadSqlEngine();
   } catch (err) {
-    console.warn('Local WASM file load failed, falling back to CDN WASM...', err);
-    SQL = await initSqlJs({
-      locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/${file}`
-    });
+    console.error('Failed to load SQL engine:', err);
+  }
+
+  if (!SQL) {
+    console.warn('Running in fallback memory state due to WASM failure');
   }
 
   const savedDbBase64 = localStorage.getItem(STORAGE_KEY);
-  if (savedDbBase64) {
+  if (savedDbBase64 && SQL) {
     try {
       const binaryString = atob(savedDbBase64);
       const len = binaryString.length;
@@ -30,6 +55,9 @@ export async function initDb() {
         bytes[i] = binaryString.charCodeAt(i);
       }
       dbInstance = new SQL.Database(bytes);
+      // Run auto migration for photo_url
+      try { dbInstance.run("ALTER TABLE hosts ADD COLUMN photo_url TEXT;"); } catch (e) {}
+      try { dbInstance.run("ALTER TABLE host_applications ADD COLUMN photo_url TEXT;"); } catch (e) {}
       console.log('SQLite loaded successfully from localStorage');
       return dbInstance;
     } catch (e) {
@@ -38,11 +66,14 @@ export async function initDb() {
   }
 
   // Create brand new database
-  dbInstance = new SQL.Database();
-  dbInstance.run(INIT_SCHEMA_SQL);
-  dbInstance.run(SEED_DATA_SQL);
-  persistDb(dbInstance);
-  console.log('SQLite database initialized with fresh schema and seed data');
+  if (SQL) {
+    dbInstance = new SQL.Database();
+    dbInstance.run(INIT_SCHEMA_SQL);
+    dbInstance.run(SEED_DATA_SQL);
+    persistDb(dbInstance);
+    console.log('SQLite database initialized with fresh schema and seed data');
+  }
+
   return dbInstance;
 }
 

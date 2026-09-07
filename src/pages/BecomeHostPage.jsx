@@ -10,9 +10,21 @@ export const BecomeHostPage = () => {
   const [languages, setLanguages] = useState('');
   const [phone, setPhone] = useState('');
   const [about, setAbout] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('');
 
   const [confirmMessage, setConfirmMessage] = useState('');
   const [error, setError] = useState('');
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,9 +40,9 @@ export const BecomeHostPage = () => {
     }
 
     exec(
-      `INSERT INTO host_applications (full_name, city, languages, phone, about, status)
-       VALUES (?, ?, ?, ?, ?, 'pending')`,
-      [fullName.trim(), city, languages.trim(), phone.trim(), about.trim()]
+      `INSERT INTO host_applications (full_name, city, languages, phone, about, photo_url, status)
+       VALUES (?, ?, ?, ?, ?, ?, 'pending')`,
+      [fullName.trim(), city, languages.trim(), phone.trim(), about.trim(), photoUrl || null]
     );
 
     setConfirmMessage("Thanks — we've received your application. Our team will reach out within a week to verify your ID and schedule a short call.");
@@ -136,6 +148,28 @@ export const BecomeHostPage = () => {
                     onChange={e => setAbout(e.target.value)}
                     placeholder="What would you enjoy showing visitors?"
                   />
+                </div>
+
+                <div className="form-row">
+                  <label htmlFor="h-photo">Profile Photo (Upload or URL)</label>
+                  <input
+                    type="file"
+                    id="h-photo"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    style={{ marginBottom: '8px' }}
+                  />
+                  <input
+                    type="url"
+                    value={photoUrl.startsWith('data:') ? '' : photoUrl}
+                    onChange={e => setPhotoUrl(e.target.value)}
+                    placeholder="Or paste image URL e.g. https://..."
+                  />
+                  {photoUrl && (
+                    <div style={{ marginTop: '10px', width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--green-600)' }}>
+                      <img src={photoUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  )}
                 </div>
 
                 <button type="submit" className="btn btn-primary btn-block">
