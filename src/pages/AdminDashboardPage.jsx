@@ -277,8 +277,70 @@ export const AdminDashboardPage = () => {
                 <input type="number" step="0.5" value={newHostRate} onChange={e => setNewHostRate(e.target.value)} />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ fontSize: '13px', fontWeight: '700' }}>Photo URL (or Base64 image)</label>
-                <input type="url" value={newHostPhotoUrl} onChange={e => setNewHostPhotoUrl(e.target.value)} placeholder="https://images.unsplash.com/..." />
+                <label style={{ fontSize: '13px', fontWeight: '700' }}>Host Profile Photo</label>
+                <div
+                  style={{
+                    border: '2px dashed var(--line)',
+                    borderRadius: '12px',
+                    padding: '24px',
+                    textAlign: 'center',
+                    background: newHostPhotoUrl ? 'var(--green-50)' : 'var(--sand-50)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    position: 'relative'
+                  }}
+                  onClick={() => document.getElementById('admin-host-photo-upload').click()}
+                  onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--green-600)'; }}
+                  onDragLeave={e => { e.currentTarget.style.borderColor = 'var(--line)'; }}
+                  onDrop={e => {
+                    e.preventDefault();
+                    e.currentTarget.style.borderColor = 'var(--line)';
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => setNewHostPhotoUrl(reader.result);
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                >
+                  <input
+                    id="admin-host-photo-upload"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={e => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => setNewHostPhotoUrl(reader.result);
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                  {newHostPhotoUrl ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
+                      <div style={{ width: '72px', height: '72px', borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--green-600)', flexShrink: 0 }}>
+                        <img src={newHostPhotoUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                      <div style={{ textAlign: 'left' }}>
+                        <p style={{ color: 'var(--green-700)', fontWeight: '700', margin: '0 0 4px' }}>✓ Photo selected</p>
+                        <button
+                          type="button"
+                          style={{ background: 'none', border: 'none', color: 'var(--ink-600)', fontSize: '13px', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                          onClick={e => { e.stopPropagation(); setNewHostPhotoUrl(''); }}
+                        >
+                          Remove & choose different
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: '36px', marginBottom: '10px' }}>📷</div>
+                      <p style={{ margin: '0 0 6px', fontWeight: '700', color: 'var(--ink-900)', fontSize: '14px' }}>Click to upload or drag &amp; drop a photo</p>
+                      <p style={{ margin: 0, color: 'var(--ink-600)', fontSize: '12px' }}>JPG, PNG, WebP · Any size · Will be cropped to circle</p>
+                    </div>
+                  )}
+                </div>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={{ fontSize: '13px', fontWeight: '700' }}>Bio</label>
