@@ -6,10 +6,8 @@ export const Footer = () => {
     <footer>
       <div className="wrap">
         <div>
-          <div className="logo" style={{ color: '#fff', marginBottom: '14px' }}>
-            <span className="mark">🇷🇼</span>
-            <span className="for" style={{ color: '#fff' }}>For</span>
-            <span className="local" style={{ color: '#3ea27a' }}>Local</span>
+          <div style={{ marginBottom: '14px' }}>
+            <img src="./logo.png" alt="For-Local Rwanda" style={{ height: '46px', objectFit: 'contain', background: '#fff', padding: '6px 12px', borderRadius: '10px' }} />
           </div>
           <p style={{ color: '#afd1c2', fontSize: '14px', maxWidth: '300px' }}>
             Connecting Rwanda's visitors with vetted local hosts for orientation, translation, and authentic experiences.

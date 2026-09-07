@@ -48,8 +48,9 @@ export const LoginPage = () => {
   return (
     <main style={{ padding: '60px 0 100px' }}>
       <div className="wrap">
-        <div className="form-card" style={{ maxWidth: '440px', margin: '0 auto' }}>
-          <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="form-card" style={{ maxWidth: '440px', margin: '0 auto', textAlign: 'center' }}>
+          <img src="./logo.png" alt="For-Local Logo" style={{ height: '60px', objectFit: 'contain', marginBottom: '16px' }} />
+          <h3 style={{ marginBottom: '20px', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <LogIn size={20} color="var(--green-700)" /> Log in to For-Local
           </h3>
 

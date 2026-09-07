@@ -19,10 +19,8 @@ export const Header = () => {
   return (
     <header className={`site-header ${mobileOpen ? 'open' : ''}`}>
       <div className="wrap">
-        <Link to="/" className="logo" onClick={closeMobile}>
-          <span className="mark">🇷🇼</span>
-          <span className="for">For</span>
-          <span className="local">Local</span>
+        <Link to="/" onClick={closeMobile} style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <img src="./logo.png" alt="For-Local Rwanda" style={{ height: '44px', objectFit: 'contain' }} />
         </Link>
 
         <nav className="nav-links">
