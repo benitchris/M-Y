@@ -329,7 +329,7 @@ export const AdminDashboardPage = () => {
                           style={{ background: 'none', border: 'none', color: 'var(--ink-600)', fontSize: '13px', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
                           onClick={e => { e.stopPropagation(); setNewHostPhotoUrl(''); }}
                         >
-                          Remove & choose different
+                          Remove &amp; choose different
                         </button>
                       </div>
                     </div>
@@ -341,6 +341,19 @@ export const AdminDashboardPage = () => {
                     </div>
                   )}
                 </div>
+                {/* OR divider */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '12px 0' }}>
+                  <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+                  <span style={{ fontSize: '12px', color: 'var(--ink-500)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>or paste a URL</span>
+                  <div style={{ flex: 1, height: '1px', background: 'var(--line)' }} />
+                </div>
+                <input
+                  type="url"
+                  value={newHostPhotoUrl && newHostPhotoUrl.startsWith('data:') ? '' : newHostPhotoUrl}
+                  onChange={e => setNewHostPhotoUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/... (optional)"
+                  onClick={e => e.stopPropagation()}
+                />
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={{ fontSize: '13px', fontWeight: '700' }}>Bio</label>
