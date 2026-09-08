@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, KeyRound } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -27,24 +27,6 @@ export const LoginPage = () => {
     }
   };
 
-  const fillAdminAndLogin = () => {
-    setEmail('admin@for-local.rw');
-    setPassword('adminpassword');
-    const res = login('admin@for-local.rw', 'adminpassword');
-    if (res.success) {
-      navigate('/admin');
-    }
-  };
-
-  const fillGuestAndLogin = () => {
-    setEmail('sarah@example.com');
-    setPassword('userpassword');
-    const res = login('sarah@example.com', 'userpassword');
-    if (res.success) {
-      navigate('/');
-    }
-  };
-
   return (
     <main style={{ padding: '60px 0 100px' }}>
       <div className="wrap">
@@ -61,19 +43,19 @@ export const LoginPage = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <label htmlFor="email">Email</label>
+            <div className="form-row" style={{ textAlign: 'left' }}>
+              <label htmlFor="email">Email address</label>
               <input
                 type="email"
                 id="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="mwimantwaliblaise@gmail.com"
                 required
               />
             </div>
 
-            <div className="form-row">
+            <div className="form-row" style={{ textAlign: 'left' }}>
               <label htmlFor="password">Password</label>
               <input
                 type="password"
@@ -85,26 +67,13 @@ export const LoginPage = () => {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary btn-block">
+            <button type="submit" className="btn btn-primary btn-block" style={{ marginTop: '10px' }}>
               Log in
             </button>
           </form>
 
-          {/* Quick Demo Fill Buttons */}
-          <div style={{ marginTop: '24px', paddingTop: '18px', borderTop: '1px solid var(--line)' }}>
-            <p className="form-note" style={{ fontWeight: '700', marginBottom: '8px' }}>⚡ Quick 1-Click Demo Login:</p>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={fillAdminAndLogin} className="btn btn-amber btn-sm" style={{ flex: 1 }}>
-                Log in as Admin
-              </button>
-              <button onClick={fillGuestAndLogin} className="btn btn-ghost btn-sm" style={{ flex: 1 }}>
-                Log in as Guest
-              </button>
-            </div>
-          </div>
-
-          <p className="form-note" style={{ textAlign: 'center', marginTop: '18px' }}>
-            New here? <Link to="/register">Sign up</Link>
+          <p className="form-note" style={{ textAlign: 'center', marginTop: '24px' }}>
+            New here? <Link to="/register">Sign up for an account</Link>
           </p>
         </div>
       </div>

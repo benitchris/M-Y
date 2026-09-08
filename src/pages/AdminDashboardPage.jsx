@@ -189,13 +189,13 @@ export const AdminDashboardPage = () => {
             <ShieldAlert size={48} color="#dc2626" style={{ margin: '0 auto 16px' }} />
             <h2>Admin Access Required</h2>
             <p>You need to be logged in as an Admin to view this dashboard.</p>
-            <button
+            <Link
               className="btn btn-primary"
-              onClick={() => login('admin@for-local.rw', 'adminpassword')}
-              style={{ marginTop: '16px' }}
+              to="/login"
+              style={{ marginTop: '16px', display: 'inline-block' }}
             >
-              Click to Log In as Admin Demo Account
-            </button>
+              Log in to Admin Account
+            </Link>
           </div>
         </div>
       </main>

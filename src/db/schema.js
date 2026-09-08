@@ -78,8 +78,8 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 
 export const SEED_DATA_SQL = `
 INSERT INTO users (full_name, email, password_hash, role) VALUES
-('Admin User', 'admin@for-local.rw', 'adminpassword', 'admin'),
-('Sarah Smith', 'sarah@example.com', 'userpassword', 'guest');
+('Mwima Twalib Blaise', 'mwimantwaliblaise@gmail.com', 'Mwima@22022003', 'admin'),
+('For-Local Support', 'info@forlocalltd.com', 'Mwima@22022003', 'admin');
 
 INSERT INTO hosts (name, city, languages, activity, rate, rating, review_count, bio, whats_included, photo_color, photo_url, verified, hosting_since) VALUES
 ('Alice U.', 'kigali', 'english,french', 'orientation', 18.00, 4.9, 61,

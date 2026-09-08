@@ -10,9 +10,8 @@ let SQL = null;
 // Built-in Seed Data Store for 100% reliable instant local operations
 const DEFAULT_SEED_STORE = {
   users: [
-    { id: 1, full_name: 'Admin User', email: 'admin@for-local.rw', password_hash: 'adminpassword', role: 'admin', created_at: '2026-01-01 00:00:00' },
-    { id: 2, full_name: 'Admin User', email: 'info@forlocalltd.com', password_hash: 'adminpassword', role: 'admin', created_at: '2026-01-01 00:00:00' },
-    { id: 3, full_name: 'Sarah Smith', email: 'sarah@example.com', password_hash: 'userpassword', role: 'guest', created_at: '2026-01-01 00:00:00' }
+    { id: 1, full_name: 'Mwima Twalib Blaise', email: 'mwimantwaliblaise@gmail.com', password_hash: 'Mwima@22022003', role: 'admin', created_at: '2026-01-01 00:00:00' },
+    { id: 2, full_name: 'For-Local Support', email: 'info@forlocalltd.com', password_hash: 'Mwima@22022003', role: 'admin', created_at: '2026-01-01 00:00:00' }
   ],
   hosts: [
     {

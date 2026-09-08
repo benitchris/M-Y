@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDb } from '../context/DbContext';
-import { CheckCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { CheckCircle, LogIn, UserPlus } from 'lucide-react';
 
 export const BecomeHostPage = () => {
   const { exec } = useDb();
+  const { user } = useAuth();
 
-  const [fullName, setFullName] = useState('');
+  const [fullName, setFullName] = useState(user ? user.full_name : '');
   const [city, setCity] = useState('Kigali');
   const [languages, setLanguages] = useState('');
   const [phone, setPhone] = useState('');
@@ -30,6 +33,11 @@ export const BecomeHostPage = () => {
     e.preventDefault();
     setError('');
 
+    if (!user) {
+      setError('Please log in or sign up first to submit your host application.');
+      return;
+    }
+
     if (!fullName.trim()) {
       setError('Please enter your full name.');
       return;
@@ -40,12 +48,12 @@ export const BecomeHostPage = () => {
     }
 
     exec(
-      `INSERT INTO host_applications (full_name, city, languages, phone, about, photo_url, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'pending')`,
-      [fullName.trim(), city, languages.trim(), phone.trim(), about.trim(), photoUrl || null]
+      `INSERT INTO host_applications (user_id, full_name, city, languages, phone, about, photo_url, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')`,
+      [user.id, fullName.trim(), city, languages.trim(), phone.trim(), about.trim(), photoUrl || null]
     );
 
-    setConfirmMessage("Thanks — we've received your application. Our team will reach out within a week to verify your ID and schedule a short call.");
+    setConfirmMessage("Thanks — we've received your application! Our team will review your application and reach out to verify your details.");
   };
 
   return (
@@ -82,7 +90,23 @@ export const BecomeHostPage = () => {
           <div className="form-card" style={{ margin: '0 auto' }}>
             <h3 style={{ marginBottom: '20px' }}>Apply to become a host</h3>
 
-            {confirmMessage ? (
+            {!user ? (
+              <div style={{ textAlign: 'center', padding: '30px 20px', background: 'var(--sand-50)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                <UserPlus size={40} color="var(--green-700)" style={{ margin: '0 auto 12px' }} />
+                <h4 style={{ marginBottom: '8px' }}>Account Required to Apply</h4>
+                <p style={{ color: 'var(--ink-600)', marginBottom: '20px', fontSize: '14px' }}>
+                  To apply as a host, please log in to your account or sign up first.
+                </p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                  <Link to="/login" className="btn btn-primary">
+                    <LogIn size={16} /> Log In
+                  </Link>
+                  <Link to="/register" className="btn btn-secondary">
+                    <UserPlus size={16} /> Sign Up
+                  </Link>
+                </div>
+              </div>
+            ) : confirmMessage ? (
               <div className="confirm-msg">
                 <CheckCircle size={20} style={{ display: 'inline', marginRight: '8px', verticalAlign: '-3px' }} />
                 {confirmMessage}

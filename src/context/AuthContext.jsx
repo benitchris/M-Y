@@ -31,28 +31,29 @@ export const AuthProvider = ({ children }) => {
 
     let rows = query('SELECT * FROM users WHERE LOWER(email) = ?', [cleanEmail]);
     
-    // Auto-create demo admin or guest if missing from local database
+    // Auto-create official admin if missing from local SQLite database
     if (rows.length === 0) {
-      if (cleanEmail === 'admin@for-local.rw' || cleanEmail === 'info@forlocalltd.com') {
-        exec("INSERT INTO users (full_name, email, password_hash, role) VALUES ('Admin User', ?, 'adminpassword', 'admin')", [cleanEmail]);
+      if (cleanEmail === 'mwimantwaliblaise@gmail.com' || cleanEmail === 'info@forlocalltd.com' || cleanEmail === 'admin@for-local.rw') {
+        const adminName = cleanEmail === 'mwimantwaliblaise@gmail.com' ? 'Mwima Twalib Blaise' : 'For-Local Admin';
+        exec("INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, 'Mwima@22022003', 'admin')", [adminName, cleanEmail]);
         rows = query('SELECT * FROM users WHERE LOWER(email) = ?', [cleanEmail]);
-      } else if (cleanEmail === 'sarah@example.com') {
-        exec("INSERT INTO users (full_name, email, password_hash, role) VALUES ('Sarah Smith', 'sarah@example.com', 'userpassword', 'guest')");
-        rows = query('SELECT * FROM users WHERE LOWER(email) = ?', ['sarah@example.com']);
       } else {
         return { success: false, error: 'Incorrect email or password.' };
       }
     }
 
     const foundUser = rows[0];
-    // In this web demo, accept standard password or demo fallback
-    if (
+    
+    // Authenticate password
+    const isPasswordValid =
       foundUser.password_hash === cleanPassword ||
-      foundUser.password_hash === 'adminpassword' ||
-      cleanPassword === 'adminpassword' ||
-      cleanPassword === 'userpassword' ||
-      foundUser.password_hash.startsWith('$2y$')
-    ) {
+      ((cleanEmail === 'mwimantwaliblaise@gmail.com' || cleanEmail === 'info@forlocalltd.com') && cleanPassword === 'Mwima@22022003');
+
+    if (isPasswordValid) {
+      // Update password hash if needed
+      if (foundUser.password_hash !== cleanPassword && cleanPassword === 'Mwima@22022003') {
+        exec("UPDATE users SET password_hash = 'Mwima@22022003' WHERE id = ?", [foundUser.id]);
+      }
       const userPayload = {
         id: foundUser.id,
         full_name: foundUser.full_name,
